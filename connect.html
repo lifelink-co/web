@@ -330,7 +330,7 @@
       <h1>Lifelink</h1>
       <h2>Web Setup</h2>
       <div id="status" class="status connecting">Ready to connect</div>
-      <button id="connect" class="btn">Connect to Device</button>
+      <button id="connect" class="btn pulse">Connect to Device</button>
     </div>
 
     <!-- Setup Flow -->
@@ -463,6 +463,11 @@
     }
 
     async function connectDevice() {
+      if (!navigator.bluetooth) {
+        alert("Web Bluetooth is not supported in this browser. Please use Chrome.");
+        return;
+      }
+
       try {
         document.getElementById("status").innerText = "Connecting...";
         document.getElementById("status").className = "status connecting";
@@ -619,4 +624,3 @@
     });
   </script>
 </body>
-</html>
