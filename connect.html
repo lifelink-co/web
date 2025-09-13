@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lifelink Setup</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body { 
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0883cf;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.685);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 20px;
+      max-width: 500px;
+      width: 100%;
+      text-align: center;
+      margin: auto;
+    }
+
+    .hidden { display: none !important; }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 300;
+    }
+
+    h2 {
+      color: #667eea;
+      margin-bottom: 30px;
+      font-size: clamp(1.1rem, 3vw, 1.5rem);
+      font-weight: 400;
+    }
+
+    .status {
+      padding: 15px;
+      border-radius: 18px;
+      margin-bottom: 30px;
+      font-weight: 500;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      word-break: break-word;
+    }
+
+    .status.connecting {
+      background: #fff3cdd5;
+      color: #856404d5;
+      border: 2px solid #ffeaa7d5;
+    }
+
+    .status.connected {
+      background: #d4eddad5;
+      color: #155724d5;
+      border: 2px solid #c3e6cbd5;
+    }
+
+    .status.error {
+      background: #f8d7dad5;
+      color: #721c24d5;
+      border: 2px solid #f5c6cbd5;
+    }
+
+    .btn {
+      background: #0883cf;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 18px;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 8px;
+      min-width: 120px;
+      width: auto;
+      display: inline-block;
+      touch-action: manipulation;
+    }
+
+    .btn:hover {
+      filter: brightness(115%);
+    }
+
+    .btn-secondary {
+      background: #e2e2e2;
+    }
+
+    .btn-danger {
+      background: #e64b4b;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #555;
+      font-weight: 500;
+      font-size: clamp(0.85rem, 2.2vw, 1rem);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e1e8ed;
+      border-radius: 18px;
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      transition: all 0.3s ease;
+      background: #f8f9fa;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .setup-steps {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .step {
+      width: 35px;
+      height: 35px;
+      border-radius: 50%;
+      background: #e1e8ed;
+      color: #666;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .step.active {
+      background: #667eea;
+      color: white;
+      transform: scale(1.1);
+    }
+
+    .step.completed {
+      background: #28a745;
+      color: white;
+    }
+
+    .step-content {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+    }
+
+    .navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .settings-grid {
+      display: grid;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .danger-zone {
+      background: #fff5f5;
+      border: 2px solid #fed7d7;
+      border-radius: 18px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+
+    .danger-zone h3 {
+      color: #e53e3e;
+      margin-bottom: 10px;
+      font-size: clamp(1rem, 2.8vw, 1.2rem);
+    }
+
+    .danger-zone p {
+      color: #666;
+      margin-bottom: 15px;
+      font-size: clamp(0.8rem, 2.2vw, 0.9rem);
+      line-height: 1.4;
+    }
+
+    .icon {
+      font-size: clamp(2rem, 8vw, 3rem);
+      margin-bottom: 20px;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Mobile specific adjustments */
+    @media (max-width: 480px) {
+      .container {
+        padding: 15px;
+        margin: 5px;
+        border-radius: 15px;
+      }
+      
+      .step-content {
+        padding: 15px;
+      }
+      
+      .navigation {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .navigation > div:empty {
+        display: none;
+      }
+      
+      .btn {
+        min-width: 140px;
+        margin: 5px;
+      }
+      
+      .settings-grid {
+        gap: 12px;
+      }
+      
+      .danger-zone {
+        padding: 12px;
+        margin-top: 15px;
+      }
+    }
+
+    /* Tablet adjustments */
+    @media (min-width: 481px) and (max-width: 768px) {
+      .container {
+        padding: 25px;
+        max-width: 600px;
+      }
+    }
+
+    /* Large screen adjustments */
+    @media (min-width: 1200px) {
+      .container {
+        padding: 50px;
+      }
+    }
+
+    /* Touch improvements */
+    @media (hover: none) and (pointer: coarse) {
+      .btn {
+        padding: 15px 30px;
+        min-height: 48px;
+      }
+      
+      .form-control {
+        padding: 15px;
+        min-height: 48px;
+      }
+      
+      .step {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    /* Landscape phone adjustments */
+    @media (max-height: 500px) and (orientation: landscape) {
+      body {
+        padding: 5px;
+      }
+      
+      .container {
+        padding: 15px;
+      }
+      
+      .icon {
+        font-size: 2rem;
+        margin-bottom: 10px;
+      }
+      
+      h1 {
+        margin-bottom: 5px;
+      }
+      
+      h2 {
+        margin-bottom: 15px;
+      }
+      
+      .status {
+        margin-bottom: 15px;
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Connection Screen -->
+    <div id="connectionScreen">
+      <div class="icon">📱</div>
+      <h1>Lifelink</h1>
+      <h2>Web Setup</h2>
+      <div id="status" class="status connecting">Ready to connect</div>
+      <button id="connect" class="btn">Connect to Device</button>
+    </div>
+
+    <!-- Setup Flow -->
+    <div id="setupFlow" class="hidden">
+      <h1>Initial Setup</h1>
+      <div class="setup-steps">
+        <div class="step active" id="step1">1</div>
+        <div class="step" id="step2">2</div>
+        <div class="step" id="step3">3</div>
+      </div>
+
+      <!-- Step 1: Name -->
+      <div id="setupStep1" class="step-content">
+        <h2>👤 What's your name?</h2>
+        <div class="form-group">
+          <label for="setupName">Full Name</label>
+          <input id="setupName" class="form-control" placeholder="Enter your full name" maxlength="30">
+        </div>
+        <div class="navigation">
+          <div></div>
+          <button onclick="nextSetupStep(2)" class="btn">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Emergency Contact -->
+      <div id="setupStep2" class="step-content hidden">
+        <h2>📞 Emergency Contact</h2>
+        <div class="form-group">
+          <label for="setupPhone">Phone Number</label>
+          <input id="setupPhone" class="form-control" placeholder="Enter emergency contact number" maxlength="20">
+        </div>
+        <div class="navigation">
+          <button onclick="prevSetupStep(1)" class="btn btn-secondary">Back</button>
+          <button onclick="nextSetupStep(3)" class="btn">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Password -->
+      <div id="setupStep3" class="step-content hidden">
+        <h2>🔐 Set Password</h2>
+        <div class="form-group">
+          <label for="setupPassword">Password</label>
+          <input id="setupPassword" class="form-control" type="password" placeholder="Choose a secure password" maxlength="20">
+        </div>
+        <div class="navigation">
+          <button onclick="prevSetupStep(2)" class="btn btn-secondary">Back</button>
+          <button onclick="completeSetup()" class="btn">Complete Setup</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="loginScreen" class="hidden">
+      <div class="icon">🔒</div>
+      <h1>Device Login</h1>
+      <h2>Enter your password to continue</h2>
+      <div class="form-group">
+        <input id="loginPass" class="form-control" placeholder="Password" type="password" maxlength="20">
+      </div>
+      <button onclick="doLogin()" class="btn">Login</button>
+    </div>
+
+    <!-- Settings Screen -->
+    <div id="settingsScreen" class="hidden">
+      <div class="icon">⚙️</div>
+      <h1>Device Settings</h1>
+      
+      <div class="settings-grid">
+        <div class="form-group">
+          <label for="settingName">Full Name</label>
+          <input id="settingName" class="form-control" placeholder="Enter your name" maxlength="30">
+        </div>
+        
+        <div class="form-group">
+          <label for="settingPhone">Emergency Contact</label>
+          <input id="settingPhone" class="form-control" placeholder="Enter emergency phone number" maxlength="20">
+        </div>
+        
+        <div class="form-group">
+          <label for="settingPassword">New Password</label>
+          <input id="settingPassword" class="form-control" type="password" placeholder="Enter new password" maxlength="20">
+        </div>
+      </div>
+
+      <button onclick="loadSettings()" class="btn btn-secondary">Reload Current Settings</button>
+      <button onclick="updateSettings()" class="btn">Save Changes</button>
+
+      <div class="danger-zone">
+        <h3>⚠️ Danger Zone</h3>
+        <p>Reset your device to factory settings. This will erase all data and allow you to set it up as a new device.</p>
+        <button onclick="confirmReset()" class="btn btn-danger">Reset Device</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const serviceUuid = "12345678-1234-5678-1234-56789abcdef0";
+    const charUuid = "12345678-1234-5678-1234-56789abcdef1";
+
+    let device, characteristic;
+    let currentSetupStep = 1;
+    let isLoggedIn = false;
+
+    document.getElementById("connect").addEventListener("click", connectDevice);
+
+    function nextSetupStep(step) {
+      const currentInput = document.getElementById(step === 2 ? 'setupName' : step === 3 ? 'setupPhone' : '');
+      if (currentInput && !currentInput.value.trim()) {
+        alert("Please fill in the required field");
+        return;
+      }
+
+      document.getElementById(`setupStep${currentSetupStep}`).classList.add('hidden');
+      document.getElementById(`step${currentSetupStep}`).classList.remove('active');
+      document.getElementById(`step${currentSetupStep}`).classList.add('completed');
+      
+      currentSetupStep = step;
+      document.getElementById(`setupStep${step}`).classList.remove('hidden');
+      document.getElementById(`step${step}`).classList.add('active');
+    }
+
+    function prevSetupStep(step) {
+      document.getElementById(`setupStep${currentSetupStep}`).classList.add('hidden');
+      document.getElementById(`step${currentSetupStep}`).classList.remove('active');
+      
+      currentSetupStep = step;
+      document.getElementById(`setupStep${step}`).classList.remove('hidden');
+      document.getElementById(`step${step}`).classList.add('active');
+      document.getElementById(`step${step}`).classList.remove('completed');
+    }
+
+    async function connectDevice() {
+      try {
+        document.getElementById("status").innerText = "Connecting...";
+        document.getElementById("status").className = "status connecting";
+
+        device = await navigator.bluetooth.requestDevice({
+          filters: [{ namePrefix: "ESP32_Lifelink" }],
+          optionalServices: [serviceUuid]
+        });
+
+        const server = await device.gatt.connect();
+        const service = await server.getPrimaryService(serviceUuid);
+        characteristic = await service.getCharacteristic(charUuid);
+
+        await characteristic.startNotifications();
+        characteristic.addEventListener("characteristicvaluechanged", handleNotify);
+
+        document.getElementById("status").innerText = "Connected ✅ Loading...";
+        document.getElementById("status").className = "status connected";
+        document.getElementById("connect").style.display = "none";
+
+      } catch (err) {
+        console.error("Connection failed:", err);
+        document.getElementById("status").innerText = "Connection failed ❌ Please try again";
+        document.getElementById("status").className = "status error";
+      }
+    }
+
+    function handleNotify(event) {
+      const value = new TextDecoder().decode(event.target.value);
+      console.log("Notification:", value);
+
+      if (value === "STATUS|NEW") {
+        showScreen('setupFlow');
+      } else if (value === "STATUS|SET") {
+        if (!isLoggedIn) {
+          showScreen('loginScreen');
+        }
+      } else if (value === "LOGIN_OK") {
+        alert("Login successful ✅");
+        showScreen('settingsScreen');
+        loadSettings()
+      } else if (value === "LOGIN_FAIL") {
+        alert("Wrong password ❌");
+      } else if (value.startsWith("SETTINGS|")) {
+        const parts = value.split("|");
+        if (parts.length >= 3) {
+          document.getElementById("settingName").value = parts[1];
+          document.getElementById("settingPhone").value = parts[2];
+        }
+      } else if (value === "SETTINGS_UPDATED") {
+        alert("Settings updated successfully ✅");
+      } else if (value === "SETTINGS_FAIL") {
+        alert("Failed to update settings ❌");
+      } else if (value === "RESET_OK") {
+        isLoggedIn = false;
+        alert("Device reset successfully ✅ Returning to setup...");
+        showScreen('setupFlow');
+        resetSetupSteps();
+      } else if (value === "RESET_FAIL") {
+        alert("Failed to reset device ❌");
+      }
+    }
+
+    function showScreen(screenId) {
+      const screens = ['connectionScreen', 'setupFlow', 'loginScreen', 'settingsScreen'];
+      screens.forEach(screen => {
+        document.getElementById(screen).classList.add('hidden');
+      });
+      document.getElementById(screenId).classList.remove('hidden');
+    }
+
+    function resetSetupSteps() {
+      currentSetupStep = 1;
+      document.getElementById('setupStep1').classList.remove('hidden');
+      document.getElementById('setupStep2').classList.add('hidden');
+      document.getElementById('setupStep3').classList.add('hidden');
+      
+      document.getElementById('step1').className = 'step active';
+      document.getElementById('step2').className = 'step';
+      document.getElementById('step3').className = 'step';
+      
+      document.getElementById('setupName').value = '';
+      document.getElementById('setupPhone').value = '';
+      document.getElementById('setupPassword').value = '';
+    }
+
+    async function completeSetup() {
+      const name = document.getElementById("setupName").value.trim();
+      const phone = document.getElementById("setupPhone").value.trim();
+      const pass = document.getElementById("setupPassword").value.trim();
+      
+      if (!name || !phone || !pass) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      const msg = `SETUP|${name}|${phone}|${pass}`;
+      await characteristic.writeValue(new TextEncoder().encode(msg));
+      alert("Setup completed successfully ✅");
+      showScreen('settingsScreen');
+    }
+
+    async function doLogin() {
+      const pass = document.getElementById("loginPass").value.trim();
+      if (!pass) {
+        alert("Please enter your password");
+        return;
+      }
+
+      const msg = `LOGIN|${pass}`;
+      isLoggedIn = true;
+      await characteristic.writeValue(new TextEncoder().encode(msg));
+    }
+
+    async function loadSettings() {
+      const msg = "GET_SETTINGS";
+      await characteristic.writeValue(new TextEncoder().encode(msg));
+    }
+
+    async function updateSettings() {
+      const name = document.getElementById("settingName").value.trim();
+      const phone = document.getElementById("settingPhone").value.trim();
+      const pass = document.getElementById("settingPassword").value.trim();
+      
+      if (!name || !phone || !pass) {
+        alert("Please fill all fields");
+        return;
+      }
+
+      const msg = `UPDATE_SETTINGS|${name}|${phone}|${pass}`;
+      await characteristic.writeValue(new TextEncoder().encode(msg));
+    }
+
+    function confirmReset() {
+      if (confirm("Are you sure you want to reset the device? This will erase all data and cannot be undone.")) {
+        if (confirm("This action is permanent. Are you absolutely sure?")) {
+          resetDevice();
+        }
+      }
+    }
+
+    async function resetDevice() {
+      const msg = "RESET_DEVICE";
+      await characteristic.writeValue(new TextEncoder().encode(msg));
+    }
+
+    document.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        const activeScreen = document.querySelector('.container > div:not(.hidden)');
+        if (activeScreen.id === 'loginScreen') {
+          doLogin();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
