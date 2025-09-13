@@ -464,7 +464,7 @@
 
     async function connectDevice() {
       if (!navigator.bluetooth) {
-        alert("Web Bluetooth is not supported in this browser. Please use Chrome.");
+        alert("Web Bluetooth is not supported in this browser. Please use BLE supported browser on iOS and chrome on other.");
         return;
       }
 
@@ -624,3 +624,4 @@
     });
   </script>
 </body>
+
