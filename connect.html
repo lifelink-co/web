@@ -13,7 +13,7 @@
 
     body { 
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0883cf;
+      background: #3c94ba;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -23,7 +23,7 @@
 
     .container {
       background: rgba(255, 255, 255, 0.685);
-      border-radius: 20px;
+      border-radius: 30px;
       box-shadow: 0 20px 40px rgba(0,0,0,0.1);
       padding: 20px;
       max-width: 500px;
@@ -42,7 +42,7 @@
     }
 
     h2 {
-      color: #667eea;
+      color: #3c94ba;
       margin-bottom: 30px;
       font-size: clamp(1.1rem, 3vw, 1.5rem);
       font-weight: 400;
@@ -76,7 +76,7 @@
     }
 
     .btn {
-      background: #0883cf;
+      background: #3c94ba;
       color: white;
       border: none;
       padding: 12px 24px;
@@ -97,7 +97,7 @@
     }
 
     .btn-secondary {
-      background: #e2e2e2;
+      background: #b6b6b6;
     }
 
     .btn-danger {
@@ -131,7 +131,7 @@
 
     .form-control:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: #3c94ba;
       background: white;
       box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
@@ -326,7 +326,7 @@
   <div class="container">
     <!-- Connection Screen -->
     <div id="connectionScreen">
-      <div class="icon">📱</div>
+      <div class="icon"><img style="height: clamp(5rem, 11vw, 6rem); width: clamp(5rem, 11vw, 6rem);" src="lifelink-icon.png"></div>
       <h1>Lifelink</h1>
       <h2>Web Setup</h2>
       <div id="status" class="status connecting">Ready to connect</div>
@@ -624,4 +624,3 @@
     });
   </script>
 </body>
-
