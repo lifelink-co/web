@@ -75,6 +75,12 @@
       border: 2px solid #f5c6cbd5;
     }
 
+    .status.warning {
+      background: #fff3cd;
+      color: #856404;
+      border: 2px solid #ffeaa7;
+    }
+
     .btn {
       background: #3c94ba;
       color: white;
@@ -96,12 +102,27 @@
       filter: brightness(115%);
     }
 
+    .btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      filter: none;
+    }
+
     .btn-secondary {
       background: #b6b6b6;
     }
 
     .btn-danger {
       background: #e64b4b;
+    }
+
+    .btn-success {
+      background: #28a745;
+    }
+
+    .btn-warning {
+      background: #ffc107;
+      color: #212529;
     }
 
     .form-group {
@@ -217,10 +238,99 @@
       margin-bottom: 20px;
     }
 
+    .test-section {
+      background: #f0f8ff;
+      border: 2px solid #b3d9ff;
+      border-radius: 18px;
+      padding: 15px;
+      margin: 20px 0;
+    }
+
+    .test-section h3 {
+      color: #0066cc;
+      margin-bottom: 15px;
+      font-size: clamp(1rem, 2.8vw, 1.2rem);
+    }
+
+    .test-buttons {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .status-info {
+      background: #e8f4f8;
+      border: 2px solid #b3d9ff;
+      border-radius: 15px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: left;
+    }
+
+    .status-info h4 {
+      color: #0066cc;
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+    }
+
+    .status-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .status-item:last-child {
+      border-bottom: none;
+    }
+
+    .status-value {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .status-value.good {
+      color: #28a745;
+    }
+
+    .status-value.bad {
+      color: #dc3545;
+    }
+
+    .status-value.warning {
+      color: #ffc107;
+    }
+
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
+    }
+
+    .realtime-data {
+      background: #f8f9fa;
+      border: 2px solid #dee2e6;
+      border-radius: 15px;
+      padding: 15px;
+      margin: 15px 0;
+    }
+
+    .realtime-data h4 {
+      color: #495057;
+      margin-bottom: 10px;
+      font-size: 1rem;
+    }
+
+    .sensor-reading {
+      font-family: monospace;
+      font-size: 0.9rem;
+      background: #ffffff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      margin: 5px 0;
+      border: 1px solid #e9ecef;
     }
 
     /* Mobile specific adjustments */
@@ -249,13 +359,14 @@
         margin: 5px;
       }
       
-      .settings-grid {
-        gap: 12px;
+      .test-buttons {
+        flex-direction: column;
+        align-items: center;
       }
       
-      .danger-zone {
-        padding: 12px;
-        margin-top: 15px;
+      .test-buttons .btn {
+        width: 100%;
+        max-width: 200px;
       }
     }
 
@@ -326,7 +437,7 @@
   <div class="container">
     <!-- Connection Screen -->
     <div id="connectionScreen">
-      <div class="icon"><img style="height: clamp(5rem, 11vw, 6rem); width: clamp(5rem, 11vw, 6rem);" src="lifelink-icon.png"></div>
+      <div class="icon"><img style="height: clamp(5rem, 11vw, 6rem); width: clamp(5rem, 11vw, 6rem);" src="lifelink-icon.png" alt="Lifelink"></div>
       <h1>Lifelink</h1>
       <h2>Web Setup</h2>
       <div id="status" class="status connecting">Ready to connect</div>
@@ -398,6 +509,35 @@
       <div class="icon">⚙️</div>
       <h1>Device Settings</h1>
       
+      <!-- Device Status Section -->
+      <div class="status-info">
+        <h4>📊 Device Status</h4>
+        <div class="status-item">
+          <span>Configuration:</span>
+          <span id="configStatus" class="status-value">Loading...</span>
+        </div>
+        <div class="status-item">
+          <span>MPU6050 Sensor:</span>
+          <span id="mpuStatus" class="status-value">Testing...</span>
+        </div>
+        <div class="status-item">
+          <span>System Status:</span>
+          <span id="systemStatus" class="status-value">Checking...</span>
+        </div>
+      </div>
+
+      <!-- Real-time Sensor Data -->
+      <div class="realtime-data">
+        <h4>📈 Live Sensor Data</h4>
+        <div id="sensorData" class="sensor-reading">
+          Accelerometer: Waiting for data...
+        </div>
+        <div id="fallStatus" class="sensor-reading">
+          Fall Detection: Monitoring...
+        </div>
+      </div>
+
+      <!-- Settings Form -->
       <div class="settings-grid">
         <div class="form-group">
           <label for="settingName">Full Name</label>
@@ -418,6 +558,19 @@
       <button onclick="loadSettings()" class="btn btn-secondary">Reload Current Settings</button>
       <button onclick="updateSettings()" class="btn">Save Changes</button>
 
+      <!-- Test Section -->
+      <div class="test-section">
+        <h3>🧪 Test Device Functions</h3>
+        <p>Test your device to ensure everything is working properly.</p>
+        <div class="test-buttons">
+          <button onclick="testMPU()" class="btn btn-warning">Test Sensor</button>
+          <button onclick="testCall()" class="btn btn-success">Test Call</button>
+          <button onclick="testSMS()" class="btn btn-success">Test SMS</button>
+          <button onclick="getFallStatus()" class="btn btn-secondary">Fall Status</button>
+        </div>
+      </div>
+
+      <!-- Danger Zone -->
       <div class="danger-zone">
         <h3>⚠️ Danger Zone</h3>
         <p>Reset your device to factory settings. This will erase all data and allow you to set it up as a new device.</p>
@@ -433,6 +586,7 @@
     let device, characteristic;
     let currentSetupStep = 1;
     let isLoggedIn = false;
+    let statusInterval;
 
     document.getElementById("connect").addEventListener("click", connectDevice);
 
@@ -473,7 +627,7 @@
         document.getElementById("status").className = "status connecting";
 
         device = await navigator.bluetooth.requestDevice({
-          filters: [{ namePrefix: "ESP32_Lifelink" }],
+          filters: [{ namePrefix: "ESP32_FallDetect" }],
           optionalServices: [serviceUuid]
         });
 
@@ -488,6 +642,9 @@
         document.getElementById("status").className = "status connected";
         document.getElementById("connect").style.display = "none";
 
+        // Request initial status
+        await sendCommand("GET_STATUS");
+
       } catch (err) {
         console.error("Connection failed:", err);
         document.getElementById("status").innerText = "Connection failed ❌ Please try again";
@@ -499,16 +656,30 @@
       const value = new TextDecoder().decode(event.target.value);
       console.log("Notification:", value);
 
-      if (value === "STATUS|NEW") {
-        showScreen('setupFlow');
-      } else if (value === "STATUS|SET") {
-        if (!isLoggedIn) {
-          showScreen('loginScreen');
+      if (value.startsWith("STATUS|")) {
+        const parts = value.split("|");
+        if (parts.length >= 2) {
+          if (parts[1] === "NOT_CONFIGURED") {
+            showScreen('setupFlow');
+          } else if (parts[1] === "CONFIGURED") {
+            if (!isLoggedIn) {
+              showScreen('loginScreen');
+            }
+          }
+          
+          // Update status display
+          updateDeviceStatus(parts);
         }
+      } else if (value.startsWith("HEARTBEAT|")) {
+        // Handle real-time sensor data
+        const sensorData = value.substring(10); // Remove "HEARTBEAT|"
+        updateSensorDisplay(sensorData);
       } else if (value === "LOGIN_OK") {
         alert("Login successful ✅");
+        isLoggedIn = true;
         showScreen('settingsScreen');
-        loadSettings()
+        loadSettings();
+        startStatusUpdates();
       } else if (value === "LOGIN_FAIL") {
         alert("Wrong password ❌");
       } else if (value.startsWith("SETTINGS|")) {
@@ -517,7 +688,7 @@
           document.getElementById("settingName").value = parts[1];
           document.getElementById("settingPhone").value = parts[2];
         }
-      } else if (value === "SETTINGS_UPDATED") {
+      } else if (value === "SETTINGS_UPDATED" || value === "SETUP_OK") {
         alert("Settings updated successfully ✅");
       } else if (value === "SETTINGS_FAIL") {
         alert("Failed to update settings ❌");
@@ -526,8 +697,97 @@
         alert("Device reset successfully ✅ Returning to setup...");
         showScreen('setupFlow');
         resetSetupSteps();
-      } else if (value === "RESET_FAIL") {
-        alert("Failed to reset device ❌");
+        stopStatusUpdates();
+      } else if (value === "MPU_OK") {
+        document.getElementById("mpuStatus").textContent = "Working";
+        document.getElementById("mpuStatus").className = "status-value good";
+        alert("MPU6050 sensor test passed ✅");
+      } else if (value === "MPU_FAIL") {
+        document.getElementById("mpuStatus").textContent = "Failed";
+        document.getElementById("mpuStatus").className = "status-value bad";
+        alert("MPU6050 sensor test failed ❌");
+      } else if (value === "TEST_CALL_OK") {
+        alert("Test call completed successfully ✅");
+      } else if (value === "TEST_CALL_FAIL") {
+        alert("Test call failed ❌ Check phone number");
+      } else if (value === "TEST_SMS_OK") {
+        alert("Test SMS sent successfully ✅");
+      } else if (value === "TEST_SMS_FAIL") {
+        alert("Test SMS failed ❌ Check phone number");
+      } else if (value.startsWith("FALL_STATUS|")) {
+        updateFallStatus(value);
+      } else if (value === "FALL_DETECTED") {
+        alert("🚨 FALL DETECTED! Emergency alert triggered!");
+        document.getElementById("fallStatus").innerHTML = "<strong style='color: #e64b4b;'>🚨 FALL DETECTED!</strong>";
+      } else if (value === "FALL_ALERT_SENT") {
+        alert("📱 Fall alert sent to emergency contact");
+      } else if (value === "NO_CONTACT_CONFIGURED") {
+        alert("⚠️ No emergency contact configured");
+      }
+    }
+
+    function updateDeviceStatus(statusParts) {
+      // Update configuration status
+      if (statusParts[1]) {
+        const configElement = document.getElementById("configStatus");
+        if (configElement) {
+          configElement.textContent = statusParts[1] === "CONFIGURED" ? "Ready" : "Setup Needed";
+          configElement.className = statusParts[1] === "CONFIGURED" ? "status-value good" : "status-value warning";
+        }
+      }
+      
+      // Update system status if available
+      if (statusParts.length > 2) {
+        const systemElement = document.getElementById("systemStatus");
+        if (systemElement) {
+          systemElement.textContent = "Online";
+          systemElement.className = "status-value good";
+        }
+      }
+    }
+
+    function updateSensorDisplay(sensorData) {
+      const sensorElement = document.getElementById("sensorData");
+      if (sensorElement) {
+        const coords = sensorData.split(',');
+        if (coords.length >= 3) {
+          sensorElement.innerHTML = `
+            <strong>Accelerometer Data:</strong><br>
+            X: ${coords[0]}g | Y: ${coords[1]}g | Z: ${coords[2]}g
+          `;
+        }
+      }
+    }
+
+    function updateFallStatus(statusData) {
+      // Parse fall status: FALL_STATUS|accMag|gyroMag|status
+      const parts = statusData.split("|");
+      if (parts.length >= 4) {
+        const fallElement = document.getElementById("fallStatus");
+        if (fallElement) {
+          const status = parts[3];
+          const color = status === "DETECTED" ? "#e64b4b" : "#28a745";
+          fallElement.innerHTML = `
+            <strong>Fall Detection:</strong> <span style="color: ${color};">${status}</span><br>
+            Acceleration: ${parts[1]}g | Gyro: ${parts[2]}°/s
+          `;
+        }
+      }
+    }
+
+    function startStatusUpdates() {
+      // Request periodic updates
+      statusInterval = setInterval(async () => {
+        if (characteristic && isLoggedIn) {
+          await sendCommand("GET_STATUS");
+        }
+      }, 5000); // Every 5 seconds
+    }
+
+    function stopStatusUpdates() {
+      if (statusInterval) {
+        clearInterval(statusInterval);
+        statusInterval = null;
       }
     }
 
@@ -554,6 +814,15 @@
       document.getElementById('setupPassword').value = '';
     }
 
+    async function sendCommand(command) {
+      if (!characteristic) return;
+      try {
+        await characteristic.writeValue(new TextEncoder().encode(command));
+      } catch (error) {
+        console.error("Failed to send command:", error);
+      }
+    }
+
     async function completeSetup() {
       const name = document.getElementById("setupName").value.trim();
       const phone = document.getElementById("setupPhone").value.trim();
@@ -565,9 +834,11 @@
       }
 
       const msg = `SETUP|${name}|${phone}|${pass}`;
-      await characteristic.writeValue(new TextEncoder().encode(msg));
+      await sendCommand(msg);
       alert("Setup completed successfully ✅");
+      isLoggedIn = true;
       showScreen('settingsScreen');
+      startStatusUpdates();
     }
 
     async function doLogin() {
@@ -578,13 +849,11 @@
       }
 
       const msg = `LOGIN|${pass}`;
-      isLoggedIn = true;
-      await characteristic.writeValue(new TextEncoder().encode(msg));
+      await sendCommand(msg);
     }
 
     async function loadSettings() {
-      const msg = "GET_SETTINGS";
-      await characteristic.writeValue(new TextEncoder().encode(msg));
+      await sendCommand("GET_SETTINGS");
     }
 
     async function updateSettings() {
@@ -598,7 +867,28 @@
       }
 
       const msg = `UPDATE_SETTINGS|${name}|${phone}|${pass}`;
-      await characteristic.writeValue(new TextEncoder().encode(msg));
+      await sendCommand(msg);
+    }
+
+    // New test functions
+    async function testMPU() {
+      await sendCommand("TEST_MPU");
+    }
+
+    async function testCall() {
+      if (confirm("This will make a test call to your emergency contact. Continue?")) {
+        await sendCommand("TEST_CALL");
+      }
+    }
+
+    async function testSMS() {
+      if (confirm("This will send a test SMS to your emergency contact. Continue?")) {
+        await sendCommand("TEST_SMS");
+      }
+    }
+
+    async function getFallStatus() {
+      await sendCommand("FALL_STATUS");
     }
 
     function confirmReset() {
@@ -610,8 +900,8 @@
     }
 
     async function resetDevice() {
-      const msg = "RESET_DEVICE";
-      await characteristic.writeValue(new TextEncoder().encode(msg));
+      await sendCommand("RESET_DEVICE");
+      stopStatusUpdates();
     }
 
     document.addEventListener('keypress', function(e) {
@@ -622,5 +912,11 @@
         }
       }
     });
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+      stopStatusUpdates();
+    });
   </script>
 </body>
+</html>
